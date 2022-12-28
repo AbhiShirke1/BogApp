@@ -1,4 +1,5 @@
 const pool = require('./config/db.config');
+// const pools = require('./config/db.config');
 const cookies = require("cookie-parser");
 const bodyParser = require('body-parser')
 const express = require("express")
@@ -135,7 +136,13 @@ const getPost = (req, res) => {
   if (c == "yes") {
     const { keywords, search, category, user } = req.body;
 
-    // const ar = [pool.query('select content from blog', (error, results)),
+    const ar = pool.query('select content from blog', (error, results)=>{
+      if(error){
+        throw error;
+      }
+
+      res.status(200).json(results.rows)
+    })
     // pool.query('SELECT content from blog where keywords like $1', ['%' + keywords + '%']),
     // pool.query('SELECT content from blog where content like $1', ['%' + search + '%']),
     // pool.query('select category from blog where category = $1', [category]),
@@ -152,12 +159,12 @@ const getPost = (req, res) => {
     // }); 
     
 
-    if(keywords)
-    pool.query('SELECT content from blog where keywords like $1', ['%' + keywords + '%'], (error, results)=>{
-      if(error) console.log(error);
+    // if(keywords)
+    // pool.query('SELECT content from blog where keywords like $1', ['%' + keywords + '%'], (error, results)=>{
+    //   if(error) console.log(error);
 
-      return res.send(results)
-    });
+    //   return res.send(results)
+    // });
 
 
   }
@@ -240,12 +247,12 @@ const getCommentById = (req, res)=>{
   if(c=='yes'){
     const id = parseInt(req.params.id);
 
-    pool.query('select comments from blog where id = $1', [id], (error, results)=>{
+    pool.query('select comment from comments where identity = $1', [id], (error, results)=>{
       if(error){
         throw error
       }
 
-      res.status(200).json(results.rows);
+      res.status(200).json(results.rows[0]);
     })
   }
 }
